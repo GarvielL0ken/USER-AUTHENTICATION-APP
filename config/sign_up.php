@@ -21,6 +21,8 @@
 	/*string*/	$email			="";
 	/*string*/	$passwd			="";
 	/*string*/	$confirm_passwd	="";
+	/*string*/	$error_message	=null;
+	/*string*/	$response		="";
 
 	/*User*/	$user			="";
 
@@ -39,14 +41,30 @@
 	$passwd = $_POST['passwd'];
 	$confirm_passwd = $_POST['confirm_passwd'];
 
-	if (!valid_username($username) || !valid_email($email) || !valid_passwd($passwd, $confirm_passwd))
-		redirect('../site/login.html?page=sign-in', true);
+	/*VALIDATE USERNAME, EMAIL AND PASSWORD*/
+	if (!valid_username($username))
+		$error_message = 'Invalid Username: Username must be between 5 and 32 characters long. Allowed chars are: a-z0-9._';
+	else if (!valid_email($email))
+		$error_message = 'Invalid email address';
+	if (!$error_message)
+		$error_message = invalid_passwd($passwd, $confirm_passwd);
 
-	$user = new User($username, $email, $passwd);
+	if (!$error_message) {
+		$user = new User($username, $email, $passwd);
+		$response = $user->in_database(true);
+		if ($response) {
+			if ($response == 'username')
+				$error_message = 'Invalid Username: Username already in use';
+			if ($response == 'email')
+				$error_message = 'Invalid Email: Email address already in use. Got to forgot password page to recover your account';
+		}
+	}
+
+	if ($error_message)
+		redirect('../site/login.html?page=sign-up&error-message='.$error_message, true);
+
+	/*USER REGISTRATION*/
 	$user->encrypt_password();
-	if ($user->in_database())
-		redirect('../site/login.html?page=sign-in', true);
 	$user->register();
-	$_SESSION['user'] = $user;
-	redirect('../site/browse.html');
+	redirect('../site/login.html?page=sign-in');
 ?>

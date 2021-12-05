@@ -60,6 +60,43 @@
 			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
 	*/
 	function is_in_database_mult(string $table, string ...$data) {
+		/*array*/	$results			=null;
+
+		$results = select_where_mult($table, $data);
+		if ($results)
+			return (true);
+		return(false);
+	}
+
+	/*Used to check if a set of keys in an array have been set*/
+	/*Takes the array to be checked and the keys that need to be checked*/
+	/*Returns True or False*/
+	function is_set_array(array $array, string ...$keys) {
+		foreach ($keys as $key) {
+			if (!isset($array[$key]))
+				return (false);
+		}
+		return (true);
+	}
+
+	/*Used to redirect a user to the specified page. Optionally exits the script that called it*/
+	function redirect(string $path, bool $exit=false) {
+		header('Location: '. $path);
+		if ($exit)
+			exit();
+	}
+
+	/*Used Select get all fields where values match those passed via ...$data
+		in any of the fields passed via ...$data
+		using the operators passed via ...$data
+		in the table passed via $table
+
+		Example:
+			select_where_mult('users', 'username', 'John Doe', 'OR', 'email', 'john@doe.com')
+		is equavalent to:
+			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
+	*/
+	function select_where_mult(string $table, string ...$data) {
 		/*array*/	$field_value_pairs	=array();
 		/*array*/	$results			=null;
 
@@ -89,32 +126,11 @@
 			$index++;
 		}
 
-		print($sql);
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
 		$statement->execute($field_value_pairs);
 		$results = $statement->fetchAll();
-		if ($results)
-			return (true);
-		return(false);
-	}
-
-	/*Used to check if a set of keys in an array have been set*/
-	/*Takes the array to be checked and the keys that need to be checked*/
-	/*Returns True or False*/
-	function is_set_array(array $array, string ...$keys) {
-		foreach ($keys as $key) {
-			if (!isset($array[$key]))
-				return (false);
-		}
-		return (true);
-	}
-
-	/*Used to redirect a user to the specified page. Optionally exits the script that called it*/
-	function redirect(string $path, bool $exit=false) {
-		header('Location: '. $path);
-		if ($exit)
-			exit();
+		return ($results);
 	}
 
 	/*Tests the validity of the passed email address against a REGEX*/
@@ -126,12 +142,16 @@
 
 	/*Tests the validity of the passed password against a REGEX,
 		Tests for equality between passwd and confirm_passwd*/
-	function valid_passwd(string $passwd, string $confirm_passwd) {
+	function invalid_passwd(string $passwd, string $confirm_passwd) {
 		/*string*/	global	$RGX_PASSWD;
 
+
 		if (strcmp($passwd, $confirm_passwd))
-			return (false);
-		return (preg_match('/'.$RGX_PASSWD.'/', $passwd));
+			return ('Password does not match confirmation password');
+		if (!preg_match('/'.$RGX_PASSWD.'/', $passwd))
+			return ('Invalid password: Password must be between 8 and 32 characters long: ' .
+				'Must contain at least one: lowercase, uppercase and a special charater');
+		return (false);
 	}
 
 	/*Tests the validity of the passed username against a REGEX*/
