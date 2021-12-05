@@ -21,10 +21,19 @@
 			return (true);
 		}
 
-		public function in_database() {
-			if (is_in_database_mult('users', 'username', $this->username, 'OR', 'email_address', $this->email))
-				return (false);
-			return (true);
+		public function in_database(bool $return_field=false) {
+			/*array*/	$results;
+
+			$results = select_where_mult('users', 'username', $this->username, 'OR', 'email_address', $this->email);
+			if ($return_field) {
+				if ($results[0]['username'] == $this->username)
+					return ("username");
+				else if ($results[0]['email'] == $this->email)
+					return ("email");
+			}
+			else if ($results)
+				return (true);
+			return (false);
 		}
 	
 		/* Used to add a new user to the database*/
