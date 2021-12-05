@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="application">
+			<nav>
+				<button @click="changePage('sign-in')">Sign In</button>
+				<button @click="changePage('sign-up')">Sign Up</button>
+				<button @click="changePage('forgot-password')">Forgot Password</button>
+			</nav>
+			<!-- SIGN UP -->
+			<div v-if="page==='sign-up'">
+				<form id="frm-sign-up" action="../config/sign_up.php" method="POST">
+					<label for="ipt-sign-up-name">
+						Username: <input type="text" id="ipt-sign-up-username" name="username" required>
+					</label><br>
+					<label for="ipt-sign-up-email-address">
+						Email Address: <input type="email" id="ipt-sign-up-email-address" name="email_address" required>
+					</label><br>
+					<label for="ipt-sign-up-password">
+						Password: <input type="password" id="ipt-sign-up-password" name="passwd" required>
+					</label><br>
+					<label for="ipt-sign-up-confirm-password">
+						Confirm Password: <input type="password" id="ipt-sign-up-confirm-password" name="confirm_passwd" required>
+					</label><br>
+					<button>Sign Up</button>
+				</form>
+			</div>
+
+			<!-- SIGN IN -->
+			<div v-if="page==='sign-in'">
+				<form id="frm-sign-in" action="../config/sign_in.php" method="POST">
+					<label for="ipt-sign-in-username">
+						Username: <input type="text" id="ipt-sign-in-username" name="username" required>
+					</label><br>
+					<label for="ipt-sign-in-password">
+						Password: <input type="password" id="ipt-sign-in-password" name="passwd" required>
+					</label><br>
+					<button>Sign In</button>
+				</form>
+			</div>
+			<!-- FORGOT PASSWORD -->
+			<div v-if="page==='forgot-password'" method="POST">
+				<form id="frm-forgot-password" action="../config/forgot_password.php">
+					<label>
+						Email Address: <input type="email" id="ipt-forgot-password-email-address" name="email_address" required>
+					</label><br>
+					<button>Request Password Reset</button>
+				</form>
+			</div>
+		</div>
+		<script src="https://unpkg.com/vue"></script>
+		<script src="./js/login.js"></script>
+	</body>
+</html>

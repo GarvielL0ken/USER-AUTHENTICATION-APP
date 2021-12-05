@@ -1,0 +1,86 @@
+☐
+✅
+
+LOGIN:	☐
+	SIGN UP:			☐
+		CREATE NEW USER:	☐
+			HASH USER Password:	☐
+			STORE USER DATA:	☐
+		LAYOUT:				☐
+		STYLE:				☐
+
+	SIGN IN:			☐
+		VERIFY USER CREDENTIALS:	☐
+		LAYOUT:						☐
+		STYLE:						☐
+
+	FORGOT PASSWORD:	☐
+		VERIFY USER EMAIL:			☐
+		CREATE HASH IN DATABASE:	☐
+		SEND EMAIL TO USER EMAIL:	☐
+		VERIFY HASH:				☐
+		UPDATE PASSWORD HASH		☐
+		LAYOUT:						☐
+		STYLE:						☐
+
+	LAYOUT:				☐
+	STYLE:				☐
+
+BROWSE:	☐
+	DISPLAY ALL BOOKS:	☐
+	BOOKS:				☐
+		SORT BY:	☐
+			NAME:		☐
+			YEAR:		☐
+			GENRE:		☐
+			AGE GROUP:	☐
+	AUTHORS:			☐
+		SORT BY:	☐
+			NAME:	☐
+			AGE:	☐
+			GENRE:	☐
+
+	MEMBERS:			☐
+		SEARCH BY:	☐
+			TITTLE:	☐
+	LIBRARIANS:			☐
+		SEARCH BY:	☐
+			TITTLE:	☐
+			AUTHOR:	☐
+	LAYOUT:				☐
+	STYLE:				☐
+
+EDIT:	☐
+	CREATE:	☐
+		BOOKS:		☐
+		AUTHORS:	☐
+		GENRES:		☐
+		MEMBERS:	☐
+	READ:	☐
+		BOOKS:		☐
+		AUTHORS:	☐
+		GENRES:		☐
+		MEMBERS:	☐
+	UPDATE:	☐
+		BOOKS:		☐
+		AUTHORS:	☐
+		GENRES:		☐
+		MEMBERS:	☐
+	DELETE:	☐
+		BOOKS:		☐
+		AUTHORS:	☐
+		GENRES:		☐
+		MEMBERS:	☐
+	LAYOUT:	☐
+	STYLE:	☐
+
+
+ACCESS:	☐
+	NON-USERS:	☐
+		RESTRICTED:	☐
+			NON LOGIN:	☐
+	MEMBERS:	☐
+		RESTRICED:	☐
+			EDIT:	☐
+	LIBRARIANS:	☐
+		NO RESTRICTIONS:	☐
