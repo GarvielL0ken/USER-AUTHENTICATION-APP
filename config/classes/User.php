@@ -5,7 +5,7 @@
 		public /*string	*/	$passwd;
 		public /*string	*/	$username;
 
-		public function __construct(string $username, string $email, string $passwd) {
+		public function __construct(string $username, string $passwd, string $email=null) {
 			$this->email = $email;
 			$this->passwd = $passwd;
 			$this->username = $username;
@@ -24,7 +24,7 @@
 		public function in_database(bool $return_field=false) {
 			/*array*/	$results;
 
-			$results = select_where_mult('users', 'username', $this->username, 'OR', 'email_address', $this->email);
+			$results = select_where_mult('users', 'user_id', 'username', $this->username, 'OR', 'email_address', $this->email);
 			if ($return_field) {
 				if ($results[0]['username'] == $this->username)
 					return ("username");
@@ -49,6 +49,16 @@
 			//create verification hash
 			//send email
 			//insert new verification hash into database
+		}
+
+		public function verify_login_credentials() {
+			/*array*/	$results	=null;
+
+			//table
+			//fields
+			//key, value
+			//conditions
+			$results = select_where_mult('users', 'password', 'username', $username, 'AND', 'password', $passwd);
 		}
 	}
 ?>

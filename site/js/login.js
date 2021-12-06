@@ -27,7 +27,7 @@ var application = new Vue({
 			value = regex.exec(url);
 			if (value)
 				return (value[1]);
-			return (null);
+			return ('');
 		},
 		sendRequest(requestName= "", callback) {
 			this.RequestHandler.fetch(requestName).then((response) => callback(response));
@@ -40,6 +40,7 @@ var application = new Vue({
 		this.page = result ? result : "sign-in";
 
 		this.errorMessage = this.getURLParameter("error-message");
-		this.errorMessage = decodeURI(this.errorMessage);
+		if (this.errorMessage)
+			this.errorMessage = decodeURI(this.errorMessage);
 	}
 })

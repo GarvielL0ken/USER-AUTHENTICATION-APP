@@ -62,7 +62,7 @@
 	function is_in_database_mult(string $table, string ...$data) {
 		/*array*/	$results			=null;
 
-		$results = select_where_mult($table, $data);
+		$results = select_where_mult($table, '*', $data);
 		if ($results)
 			return (true);
 		return(false);
@@ -96,7 +96,7 @@
 		is equavalent to:
 			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
 	*/
-	function select_where_mult(string $table, string ...$data) {
+	function select_where_mult(string $table, string $fields, string ...$data) {
 		/*array*/	$field_value_pairs	=array();
 		/*array*/	$results			=null;
 
@@ -108,7 +108,13 @@
 		/*PDO Connection*/	$connection	=null;
 		/*PDO Statement*/	$statement	=null;
 
-		$sql = 'SELECT * FROM '. $table . ' WHERE';
+		$sql = 'SELECT ';
+		if ($fields)
+			$sql .= '('.$fields.')';
+		else
+			$sql .= '*';
+		$sql .= ' FROM ' . $table . ' WHERE';
+
 		foreach ($data as $value) {
 			$operation = $index % 3;
 			

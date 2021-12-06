@@ -50,7 +50,7 @@
 		$error_message = invalid_passwd($passwd, $confirm_passwd);
 
 	if (!$error_message) {
-		$user = new User($username, $email, $passwd);
+		$user = new User($username, $passwd);
 		$response = $user->in_database(true);
 		if ($response) {
 			if ($response == 'username')
