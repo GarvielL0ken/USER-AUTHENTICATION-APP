@@ -30,7 +30,6 @@
 				`year`			YEAR			NOT NULL,
 				`author_id`		INT(4)			NOT NULL
 				);";
-			print($sql);
 			$conn->exec($sql);
 			$sql = "CREATE TABLE IF NOT EXISTS `authors` (
 				`author_id`		INT(4)			AUTO_INCREMENT	PRIMARY KEY,

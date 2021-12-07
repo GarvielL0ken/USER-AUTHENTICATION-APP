@@ -15,17 +15,19 @@
 		public function encrypt_password(string $passwd=null) {
 			if (!$passwd)
 				$passwd = $this->passwd;
-			
-			$this->passwd = password_hash($passwd, 0);
-			
+			$this->passwd = password_hash($this->passwd, PASSWORD_DEFAULT);
 			return (true);
 		}
 
 		public function in_database(bool $return_field=false) {
-			/*array*/	$results;
+			/*array*/	$conditions	=null;
+			/*array*/	$data		=null;
+			/*array*/	$results	=null;
 
-			$results = select_where_mult('users', 'user_id', 'username', $this->username, 'OR', 'email_address', $this->email);
-			if ($return_field) {
+			$data = array('username' => $this->username, 'email_address' => $this->email);
+			$conditions = array('OR');
+			$results = select_where_mult('users', 'user_id', $data, $conditions);
+			if ($return_field && $results) {
 				if ($results[0]['username'] == $this->username)
 					return ("username");
 				else if ($results[0]['email'] == $this->email)
@@ -41,7 +43,7 @@
 		public function register() {
 			/*array*/	$data	=array();
 
-			$data['email'] = $this->email;
+			$data['email_address'] = $this->email;
 			$data['passwd'] = $this->passwd;
 			$data['username'] = $this->username;
 			insert_new_record('users', $data);
@@ -52,13 +54,29 @@
 		}
 
 		public function verify_login_credentials() {
+			/*array*/	$conditions	=null;
+			/*array*/	$data		=null;
 			/*array*/	$results	=null;
+			/*string*/	$fields		='';
 
-			//table
-			//fields
-			//key, value
-			//conditions
-			$results = select_where_mult('users', 'password', 'username', $username, 'AND', 'password', $passwd);
+			$data = array('username' => $this->username);
+			$conditions = array();
+			$results = select_where_mult('users', $fields, $data, $conditions);
+			if ($results) {
+				$results = $results[0];
+				if (password_verify($this->passwd, $results['passwd']))
+					return ('Username and Password do not match');
+				if (/*['verified']*/true) {
+					$this->id = $results['user_id'];
+					$this->email = $results['email_address'];
+					$this->role = $results['role'];
+					$this->passwd = null;
+					return ('ok');
+				} else
+					return ('Please verifiy your account via the verification email sent to your email address');
+			} else {
+				return ('Username and Password do not match');
+			}
 		}
 	}
 ?>

@@ -96,14 +96,11 @@
 		is equavalent to:
 			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
 	*/
-	function select_where_mult(string $table, string $fields, string ...$data) {
-		/*array*/	$field_value_pairs	=array();
+	function select_where_mult(string $table, string $fields, array $data, array $conditions) {
+		/*array*/	$keys				=null;
 		/*array*/	$results			=null;
 
 		/*int*/		$index				=0;
-		/*int*/		$operation			=0;
-
-		/*string*/	$field				="";
 
 		/*PDO Connection*/	$connection	=null;
 		/*PDO Statement*/	$statement	=null;
@@ -115,26 +112,17 @@
 			$sql .= '*';
 		$sql .= ' FROM ' . $table . ' WHERE';
 
-		foreach ($data as $value) {
-			$operation = $index % 3;
-			
-			if (!$operation) {
-				$field = $value;
-				$sql .= ' ' . $value . ' = ';
-			}
-			elseif ($operation == 1) {
-				$sql .= ':' . $field;
-				$field_value_pairs[$field] = $value;
-			}
-			elseif ($operation == 2) {
-				$sql .= ' ' . $value;
-			}
+		$keys = array_keys($data);
+		foreach ($keys as $key) {
+			$sql .= ' ('.$key.' = :'.$key.')';
+			if ($index < count($conditions))
+				$sql .= ' '.$conditions[$index];
 			$index++;
 		}
-
+		print($sql);
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
-		$statement->execute($field_value_pairs);
+		$statement->execute($data);
 		$results = $statement->fetchAll();
 		return ($results);
 	}
@@ -168,7 +156,7 @@
 	}
 
 	function verify_user_credentials(string $username, string $passwd) {
-		if ($username == 'admin' && $passwd == "123456")
+		if ($username == 'admin' && $passwd == '123456')
 			return (TRUE);
 		else
 			return (FALSE);

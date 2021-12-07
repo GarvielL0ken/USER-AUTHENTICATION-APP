@@ -50,7 +50,7 @@
 		$error_message = invalid_passwd($passwd, $confirm_passwd);
 
 	if (!$error_message) {
-		$user = new User($username, $passwd);
+		$user = new User($username, $passwd, $email);
 		$response = $user->in_database(true);
 		if ($response) {
 			if ($response == 'username')
@@ -64,7 +64,6 @@
 		redirect('../site/login.html?page=sign-up&error-message='.$error_message, true);
 
 	/*USER REGISTRATION*/
-	$user->encrypt_password();
 	$user->register();
 	redirect('../site/login.html?page=sign-in');
 ?>

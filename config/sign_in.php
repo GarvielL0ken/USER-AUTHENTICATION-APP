@@ -30,12 +30,13 @@
 		redirect('../site/login.html?page=sign-in', true);
 
 	$user = new User($_POST['username'], $_POST['passwd']);
+	$user->encrypt_password();
 	$verified = $user->verify_login_credentials();
-	if ($verified) {
-		$_SESSION['user'] = serialize($user->to_array());
+	if ($verified == 'ok') {
+		$_SESSION['user'] = serialize($user);
 		header('Location: ../site/browse.html');
 	}
 	else
-		header('Location: ../site/login.html?error-message=Invalid Username or Password', true);
+		header('Location: ../site/login.html?error-message='.$verified, true);
 
 ?>
