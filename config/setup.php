@@ -22,25 +22,28 @@
 			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$conn->exec("CREATE DATABASE IF NOT EXISTS $dbname");
 			$conn->query("use $dbname");
-			$sql = "CREATE TABLE IF NOT EXISTS `books` (
-				`book_id`		INT(4)			AUTO_INCREMENT	PRIMARY KEY,
-				`book_name`		VARCHAR(128)	NOT NULL,
-				`age_group`		VARCHAR(64)		NOT NULL,
-				`genre`			VARCHAR(64)		NOT NULL,
-				`year`			YEAR			NOT NULL,
-				`author_id`		INT(4)			NOT NULL
-				);";
-			$conn->exec($sql);
 			$sql = "CREATE TABLE IF NOT EXISTS `authors` (
 				`author_id`		INT(4)			AUTO_INCREMENT	PRIMARY KEY,
-				`author_name`	VARCHAR(64)		NOT NULL
+				`name`			CHAR(32)		UNIQUE,
+				`age`			CHAR(32)		NOT NULL,
+				`genres`		CHAR(255)		NOT NULL
+				);";
+			$conn->exec($sql);
+			$sql = "CREATE TABLE IF NOT EXISTS `books` (
+				`book_id`		INT(4)			AUTO_INCREMENT	PRIMARY KEY,
+				`title`			CHAR(128)	NOT NULL,
+				`age_group`		CHAR(64)		NOT NULL,
+				`genre`			CHAR(64)		NOT NULL,
+				`year`			YEAR			NOT NULL,
+				`author_id`		INT(4),
+				FOREIGN KEY (author_id) REFERENCES authors(author_id)
 				);";
 			$conn->exec($sql);
 			$sql = "CREATE TABLE IF NOT EXISTS `users` (
 				`user_id`		INT(4)			AUTO_INCREMENT	PRIMARY KEY,
-				`username`		VARCHAR(32)		NOT NULL,
-				`email_address`	VARCHAR(64)		NOT NULL,
-				`passwd`		VARCHAR(255)	NOT NULL,
+				`username`		CHAR(32)		NOT NULL,
+				`email_address`	CHAR(64)		NOT NULL,
+				`passwd`		CHAR(255)	NOT NULL,
 				`role`			BOOL			NOT NULL		DEFAULT 0
 				);";
 			$conn->exec($sql);
