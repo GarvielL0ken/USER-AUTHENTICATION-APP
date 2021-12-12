@@ -16,10 +16,12 @@
 		
 		public function __construct(string $name) {
 			global $TABLE_FIELD_PAIRS;
+			global $PRIMARY_KEYS;
 
 			$this->name = $name;
 			$this->fields = array();
 			$this->create_fields($TABLE_FIELD_PAIRS[$name]);
+			$this->primary_key = $PRIMARY_KEYS[$name];
 		}
 
 		private function create_fields(string $str_fields) {
@@ -31,10 +33,18 @@
 			}
 		}
 
-		public function execute_action() {
+		private function prepare_data(bool $set_primary_key=false) {
 			/*array*/	$data;
-			print("EXECUTE ACTION: ". $this->action);
-			print_r($this->fields);
+
+			$data = array();
+			foreach ($this->fields as $field) 
+				$data[$field->name] = $field->value;
+			if ($set_primary_key)
+				$data['primary_key'] = $this->primary_key;
+			return ($data);
+		}
+
+		public function execute_action() {
 			if ($this->action == 'CREATE')
 				$response = $this->execute_action_create();
 			if ($this->action == 'UPDATE')
@@ -46,16 +56,16 @@
 		public function execute_action_create() {
 			/*array*/	$data;
 
-			$data = array();
-			foreach ($this->fields as $field) {
-				$data[$field->name] = $field->value;
-			}
-
+			$data = $this->prepare_data();
 			insert_new_record($this->name, $data, TRUE);
 			return (false);
 		}
 
 		public function execute_action_update() {
+			/*array*/	$data;
+
+			$data = $this->prepare_data(TRUE);
+			update_record($this->name, $data);
 			return (false);
 		}
 
@@ -86,17 +96,9 @@
 					$regex = $RGX_PATTERNS['genres'];
 					$response = 'Input must contain only alpabetical characters as well as comma and space';
 				}
-				print("REGEX: ".$regex." || ");
-				print("VALUE: ".$post[$field->name]." || ");
 				if (!preg_match('/'.$regex.'/', $post[$field->name], $matches)) {
-					print("MATHCES:");
-					print_r($matches[0]);
-					print(" || ");
 					return ('ERROR: '.$response);
 				}
-				print("MATHCES:");
-				print_r($matches[0]);
-				print(" || ");
 				$this->fields[$field->name]->value = $post[$field->name];
 			}
 			return (false);

@@ -9,4 +9,5 @@
 							'books' => 'title',
 							'genres' => 'genre',
 							'users' => 'username, role'];
+	$PRIMARY_KEYS = ['authors' => 'name'];
 ?>

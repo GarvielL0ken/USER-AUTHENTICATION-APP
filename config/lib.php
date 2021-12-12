@@ -22,8 +22,49 @@
 	
 	//bool	valid_username(string $username);
 
-	function insert_new_record($table, $data, $ignore=FALSE)
-	{
+	function data_to_sql(array $data, string $modifier=null) {
+		/*array*/	$keys;
+
+		/*index*/	$index;
+
+		/*string*/	$sql;
+		/*string*/	$key_string;
+
+		$index = 0;
+		$sql = '';
+		$keys = array_keys($data);
+		if ($modifier != 'PRIMARY_KEY') {
+			foreach ($keys as $key) {
+				if ($key != 'primary_key') {
+					$key_string = $key.' = :'.$key;
+					if (!$modifier)
+						$key_string = '('.$key_string.')';
+					$key_string = ' '.$key_string;
+					if ($index)
+						$key_string = ','.$key_string;
+					$sql .= $key_string;
+				}
+				$index++;
+			}
+		} else {
+			$sql = '('.$data['primary_key'] .'= :'.$data['primary_key'].')';
+		}
+		return ($sql);
+	}
+	
+	function execute_sql(string $sql, array $data, bool $return_results=TRUE) {
+		/*PDO Connection*/	$connection;
+		/*PDO Statement*/	$statement;
+
+		$connection = connect_to_database();
+		$statement = $connection->prepare($sql);
+		$statement->execute($data);
+		if ($return_results)
+			$results = $statement->fetchAll();
+		return ($results);
+	}
+
+	function insert_new_record($table, $data, $ignore=FALSE) {
 		/*array*/			$keys		=NULL;
 
 		/*string*/			$fields		="";
@@ -48,7 +89,6 @@
 			$ignore = '';
 
 		$sql = 'INSERT '. $ignore . ' INTO '. $table . ' (' . $fields . ') VALUES (' . $values . ')';
-		print($sql);
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
 		$statement->execute($data);
@@ -85,8 +125,11 @@
 	}
 
 	/*Used to redirect a user to the specified page. Optionally exits the script that called it*/
-	function redirect(string $path, bool $exit=false) {
-		header('Location: '. $path);
+	function redirect(string $path, bool $exit=FALSE, bool $print_instead=FALSE) {
+		if ($print_instead)
+			print($path);
+		else
+			header('Location: '. $path);
 		if ($exit)
 			exit();
 	}
@@ -157,6 +200,16 @@
 			return ('Invalid password: Password must be between 8 and 32 characters long: ' .
 				'Must contain at least one: lowercase, uppercase, numeric and special charater');
 		return (false);
+	}
+
+	function update_record(string $table, array $data) {
+		/*string*/	$sql;
+		
+		$sql = 'UPDATE '.$table;
+		$sql .= ' SET'. data_to_sql($data, 'UPDATE');
+		$sql .= ' WHERE'. data_to_sql($data, 'PRIMARY_KEY');
+		
+		return (execute_sql($sql, $data, FALSE));
 	}
 
 	/*Tests the validity of the passed username against a REGEX*/
