@@ -38,8 +38,8 @@ export class RequestHandler {
 	}
 
 	/*		____SET____				*/
-	addNewRequestData(name, path) {
-		var newRequestData = new RequestData(name, path);
+	addNewRequestData(name, path, method="GET", returnType="JSON") {
+		var newRequestData = new RequestData(name, path, method, returnType);
 
 		this.arrRequestData_.push(newRequestData);
 	}
@@ -52,21 +52,29 @@ export class RequestHandler {
 	/*		____REQUEST METHODS___	*/
 	//Send Request using the data provided in the requestData object
 	//Returns the response text
-	async fetch(requestData) {
+	async fetch(requestData, data=null) {
 		var	response	=null;
-		var	data		=null;
-		
-		response = await fetch(requestData.path);
-		data = await response.text();
-		
-		return (data);
+	
+
+		if (requestData.method === "POST") {
+			response = await fetch(requestData.path, {
+				method: 'post',
+				body: data
+			})
+		} else
+			response = await fetch(requestData.path);
+		if (requestData.returnType === "JSON")
+			response = await response.json();
+		else
+			response= await response.text();
+		return (response);
 	}
 
-	async fetchN(requestName, setToCurrent=false) {
+	async fetchN(requestName, data=null) {
 		var request;
 
 		request = this.getRequestN(requestName);
 
-		return(this.fetch(request));
+		return(this.fetch(request, data));
 	}
 }

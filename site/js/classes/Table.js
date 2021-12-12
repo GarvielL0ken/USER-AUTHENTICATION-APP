@@ -2,6 +2,8 @@ import { Author } from './Author.js';
 import { RequestData } from './RequestData.js';
 import { RequestHandler } from './RequestHandler.js'
 
+import { getURLParameter } from '../lib.js';
+
 export class Table {
 	constructor(name, fields, displayMode='view') {
 		/** @private {!name}*/
@@ -16,10 +18,13 @@ export class Table {
 		/** @private {!records}*/
 		this.records_ = [];
 		this.RequestHandler = new RequestHandler();
-		this.RequestHandler.addNewRequestData("getTable", "get_table.php?table="+name);
+		this.RequestHandler.addNewRequestData("getTable", "get_table.php?table="+name, "GET");
 		this.RequestHandler.addNewRequestData("CREATE_RECORD", "create_record.php?table="+name);
-		this.RequestHandler.addNewRequestData("UPDATE_RECORD", "edit.php?table="+name);
+		this.RequestHandler.addNewRequestData("UPDATE_RECORD", "edit.php?table="+name+"&action=UPDATE", "POST", "text");
 		this.RequestHandler.addNewRequestData("DELETE_RECORD", "delete_record.php?table="+name);
+
+		/** @private {!updatedRecord} */
+		this.updatedRecord = '';
 	}
 
 	//=========================================================================
@@ -37,12 +42,11 @@ export class Table {
 	getTableFromDatabaseCallback(response) {
 		/*int*/		var	index;
 	
-		response = JSON.parse(response);
 		index = 0;
 		if (response) {
 			while (response[index]) {
 				if (this.name_ === 'authors')
-					this.records_.push(new Author(this.fields_, response[index]));
+					this.records_.push(new Author(this, response[index]));
 				index++;
 			}
 		}
@@ -69,7 +73,23 @@ export class Table {
 	}
 
 	//=========================================================================
-	//STANDARD METHODS
+	//CRUD METHODS
+	//=========================================================================
+
+	updateTable(record) {
+		this.updatedRecord = record;
+		this.RequestHandler.fetchN("UPDATE_RECORD", record.stringify())
+			.then((response) => this.updateTableCallback(response));
+	}
+
+	updateTableCallback(response) {
+		if (getURLParameter(response, 'response') != 'SUCCESS')
+			this.updatedRecord.revertChanges();
+
+	}
+
+	//=========================================================================
+	//PRINT METHODS
 	//=========================================================================
 	print() {
 		/*string*/	var	html;
@@ -129,6 +149,4 @@ export class Table {
 		}
 		return(html);
 	}
-
-	
 }

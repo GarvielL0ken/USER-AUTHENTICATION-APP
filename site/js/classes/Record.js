@@ -13,6 +13,10 @@ export class Record {
 	}
 
 	updateRecord() {
-		console.log(this);
+		this.table_.updateTable(this);
+	}
+
+	stringify() {
+		return(JSON.stringify(this.toDataObject()));
 	}
 }
