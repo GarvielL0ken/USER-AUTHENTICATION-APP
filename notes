@@ -65,9 +65,7 @@ BROWSE:	☐
 EDIT:	☐
 	CREATE:	☐
 		BOOKS:		☐
-		AUTHORS:	☐
-		GENRES:		☐
-		MEMBERS:	☐
+		AUTHORS:	✅
 	READ:	☐
 		BOOKS:		☐
 		AUTHORS:	☐
@@ -75,13 +73,11 @@ EDIT:	☐
 		MEMBERS:	☐
 	UPDATE:	☐
 		BOOKS:		☐
-		AUTHORS:	☐
-		GENRES:		☐
+		AUTHORS:	✅
 		MEMBERS:	☐
 	DELETE:	☐
 		BOOKS:		☐
 		AUTHORS:	☐
-		GENRES:		☐
 		MEMBERS:	☐
 	LAYOUT:	☐
 	STYLE:	☐
