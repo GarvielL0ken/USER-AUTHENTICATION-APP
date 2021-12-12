@@ -22,15 +22,15 @@
 	
 	//bool	valid_username(string $username);
 
-	function insert_new_record($table, $data)
+	function insert_new_record($table, $data, $ignore=FALSE)
 	{
-		/*array*/			$keys		=null;
+		/*array*/			$keys		=NULL;
 
 		/*string*/			$fields		="";
 		/*string*/			$values		="";
 
-		/*PDO Connection*/	$connection	=null;
-		/*PDO Statement*/	$statement	=null;
+		/*PDO Connection*/	$connection	=NULL;
+		/*PDO Statement*/	$statement	=NULL;
 
 		$keys = array_keys($data);
 		$fields = '';
@@ -42,7 +42,12 @@
 		}
 		$fields = rtrim($fields, ', ');
 		$values = rtrim($values, ', ');
-		$sql = 'INSERT INTO ' . $table . ' (' . $fields . ') VALUES (' . $values . ')';
+		if ($ignore)
+			$ignore = 'IGNORE';
+		else
+			$ignore = '';
+
+		$sql = 'INSERT '. $ignore . ' INTO '. $table . ' (' . $fields . ') VALUES (' . $values . ')';
 		print($sql);
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
@@ -60,7 +65,7 @@
 			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
 	*/
 	function is_in_database_mult(string $table, string ...$data) {
-		/*array*/	$results			=null;
+		/*array*/	$results	=null;
 
 		$results = select_where_mult($table, '*', $data);
 		if ($results)
@@ -86,7 +91,11 @@
 			exit();
 	}
 
-	/*Used Select get all fields where values match those passed via ...$data
+	function select_all(string $table, string $fields) {
+		return (select_where_mult($table, $fields));
+	}
+
+	/*Used to get all fields where values match those passed via ...$data
 		in any of the fields passed via ...$data
 		using the operators passed via ...$data
 		in the table passed via $table
@@ -96,7 +105,7 @@
 		is equavalent to:
 			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
 	*/
-	function select_where_mult(string $table, string $fields, array $data, array $conditions) {
+	function select_where_mult(string $table, string $fields, array $data=null, array $conditions=null) {
 		/*array*/	$keys				=null;
 		/*array*/	$results			=null;
 
@@ -107,19 +116,21 @@
 
 		$sql = 'SELECT ';
 		if ($fields)
-			$sql .= '('.$fields.')';
+			$sql .= $fields;
 		else
 			$sql .= '*';
-		$sql .= ' FROM ' . $table . ' WHERE';
+		$sql .= ' FROM ' . $table;
 
-		$keys = array_keys($data);
-		foreach ($keys as $key) {
-			$sql .= ' ('.$key.' = :'.$key.')';
-			if ($index < count($conditions))
-				$sql .= ' '.$conditions[$index];
-			$index++;
+		if (isset($data)) {
+			$sql .= ' WHERE';
+			$keys = array_keys($data);
+			foreach ($keys as $key) {
+				$sql .= ' ('.$key.' = :'.$key.')';
+				if ($index < count($conditions))
+					$sql .= ' '.$conditions[$index];
+				$index++;
+			}
 		}
-		print($sql);
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
 		$statement->execute($data);
@@ -144,7 +155,7 @@
 			return ('Password does not match confirmation password');
 		if (!preg_match('/'.$RGX_PASSWD.'/', $passwd))
 			return ('Invalid password: Password must be between 8 and 32 characters long: ' .
-				'Must contain at least one: lowercase, uppercase and a special charater');
+				'Must contain at least one: lowercase, uppercase, numeric and special charater');
 		return (false);
 	}
 
