@@ -1,17 +1,68 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src=""></script>
+		<link rel="stylesheet" href="css/common.css">
+		<!-- Verify User //Paired with backend Verification-->
 		<meta charset="utf-8">
-		<title></title>
+		<title>Library: Edit</title>
 	</head>
 	<body>
-		<div id="application">
+		<div id="vueModel">
 			<!--Nav		-->
+			<nav>
+				<a href="./browse.html"><button>Browse</button></a><br>
+				<button @click="changeTable('authors')">Authors</button>
+				<button @click="changeTable('books')">Books</button>
+				<button @click="log()">Genres</button>
+				<button @click="changeTable('users')">Users</button>
+			</nav>
 			<!--Authors	-->
+			<div>{{errorMessage}}</div>
+			<div v-if="table === 'authors'">
+				<div v-html="tables.authors.print()"></div>
+				<div class="row-container" v-for='author in tables.authors.getRecords()'>
+					<!-- AUTHOR NAME -->
+					<div v-if="author.state==='view' || author.state==='delete'" class="record box">{{author.name}}</div>
+					<div v-if="author.state==='edit'" class="record box">
+						<input type="text" name="name" v-model='author.name'>
+					</div>
+					
+					<!-- AUTHOR AGE-->
+					<div v-if="author.state==='view' || author.state==='delete'" class="record box">{{author.age}}</div>
+					<div v-if="author.state==='edit'" class="record box">
+						<input type="number" name="age" v-model='author.age'>
+					</div>
+					
+					<!-- AUTHROR GENRES-->
+					<div v-if="author.state==='view' || author.state==='delete'" class="record box">{{author.genres}}</div>
+					<div v-if="author.state==='edit'" class="record box">
+						<input type="text" name="genres" v-model='author.genres'>
+					</div>
+
+					<!-- AUTHROR EDIT CONTROLS -->
+					<div class="record box">
+						<button @click="author.changeState('edit')" v-if="author.state==='view' || author.state==='delete'">Edit</button>
+						<button @click="author.changeState('confirmEdit')" v-if="author.state==='edit'">Commit</button>
+						<button @click="author.changeState('cancelEdit')" v-if="author.state==='edit'">Cancel</button>
+					</div>
+					<!-- AUTHOR DELETE CONSTROLS -->
+					<div class="record box">
+						<button @click="author.changeState('delete')" v-if="author.state==='view' || author.state==='edit'">Delete</button>
+						<button @click="author.changeState('view')" v-if="author.state==='delete'">Confirm</button>
+						<button @click="author.changeState('view')" v-if="author.state==='delete'">Cancel</button>
+					</div>
+				</div>
+			</div>
 			<!--Books	-->
-			<!--Members	-->
-			<!--Genres	-->
+			<div v-if="table === 'books'">
+				<div v-html="tables.books.print()"></div>
+			</div>
+			<!--Users	-->
+			<div v-if="table === 'users'">
+				<div v-html="tables.users.printHeader()"></div>
+			</div>
 		</div>
+		<script src="https://unpkg.com/vue"></script>
+		<script src="./js/edit.js" type="module"></script>
 	</body>
 </html>
