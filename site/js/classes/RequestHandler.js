@@ -6,7 +6,8 @@ export class RequestHandler {
 
 		/** @private {!arrRequestData} */
 		this.arrRequestData_ = [];
-		this.initializeRequestData(requestData);
+		if (requestData)
+			this.initializeRequestData(requestData);
 	}
 
 	initializeRequestData(requestData) {
