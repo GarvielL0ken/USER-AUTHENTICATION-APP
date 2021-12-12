@@ -5,7 +5,7 @@
 		public /*string	*/	$passwd;
 		public /*string	*/	$username;
 
-		public function __construct(string $username, string $passwd, string $email=null) {
+		public function __construct(string $username, string $passwd=null, string $email=null) {
 			$this->email = $email;
 			$this->passwd = $passwd;
 			$this->username = $username;
@@ -24,8 +24,11 @@
 			/*array*/	$data		=null;
 			/*array*/	$results	=null;
 
-			$data = array('username' => $this->username, 'email_address' => $this->email);
-			$conditions = array('OR');
+			$data = array('username' => $this->username);
+			if ($this->email) {
+				$data['email_address'] = $this->email;
+				$conditions = array('OR');
+			}
 			$results = select_where_mult('users', 'user_id', $data, $conditions);
 			if ($return_field && $results) {
 				if ($results[0]['username'] == $this->username)
