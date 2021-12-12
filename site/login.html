@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="stylesheet" href="css/common.css">
 		<meta charset="utf-8">
 		<title></title>
 	</head>
@@ -9,7 +10,7 @@
 			<nav>
 				<button @click="changePage('sign-in')">Sign In</button>
 				<button @click="changePage('sign-up')">Sign Up</button>
-				<button @click="changePage('forgot-password')">Forgot Password</button>
+				<button @click="changePage('forgot-password-email')">Forgot Password</button>
 			</nav>
 			<!-- SIGN UP -->
 			<div v-if="page==='sign-up'">
@@ -45,8 +46,8 @@
 				<p>{{errorMessage}}</p>
 			</div>
 			<!-- FORGOT PASSWORD -->
-			<div v-if="page==='forgot-password'" method="POST">
-				<form id="frm-forgot-password" action="../config/forgot_password.php">
+			<div v-if="page==='forgot-password-email'" >
+				<form id="frm-forgot-password" action="../config/forgot_password.php?form=email" method="POST">
 					<label>
 						Email Address: <input type="email" id="ipt-forgot-password-email-address" name="email_address" required>
 					</label><br>
@@ -54,8 +55,19 @@
 				</form>
 				<p>{{errorMessage}}</p>
 			</div>
+			<div v-if="page==='forgot-password-new-password'">
+				<form id="frm-forgot-password" action="../config/forgot_password.php?form=new_password">
+					<label>
+						New Password: <input type="password" id="ipt-forgot-password-new-password" name="new_passwd" required>
+					</label><br>
+					<label>
+						Confirm Password: <input type="password" id="forgot-password-confirm-password" name="confirm_passwd" required>
+					</label>
+					<button>Change Password</button>
+				</form>
+			</div>
 		</div>
 		<script src="https://unpkg.com/vue"></script>
-		<script src="./js/login.js"></script>
+		<script src="./js/login.js" type="module"></script>
 	</body>
 </html>
