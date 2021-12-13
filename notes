@@ -63,25 +63,23 @@ BROWSE:	☐
 	STYLE:				☐
 
 EDIT:	☐
-	CREATE:	☐
+	CREATE:	✅
 		BOOKS:		✅
 		AUTHORS:	✅
 	READ:	☐
 		BOOKS:		☐
 		AUTHORS:	☐
-		GENRES:		☐
 		MEMBERS:	☐
-	UPDATE:	☐
+	UPDATE:	✅
 		BOOKS:		✅
 		AUTHORS:	✅
-		MEMBERS:	☐
-	DELETE:	☐
+		MEMBERS:	✅
+	DELETE:	✅
 		BOOKS:		✅
 		AUTHORS:	✅
-		MEMBERS:	☐
+		MEMBERS:	✅
 	LAYOUT:	☐
 	STYLE:	☐
-
 
 ACCESS:	☐
 	NON-USERS:	☐
