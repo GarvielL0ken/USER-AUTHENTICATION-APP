@@ -11,5 +11,6 @@
 							'genres' => 'genre',
 							'users' => 'username, role'];
 	$PRIMARY_KEYS = ['authors' => 'name',
-						'books' => 'title'];
+						'books' => 'title',
+						'users' => 'username'];
 ?>

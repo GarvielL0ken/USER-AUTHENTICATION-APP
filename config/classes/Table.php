@@ -85,6 +85,7 @@
 			/*array*/	$data;
 
 			$data = $this->prepare_data(TRUE);
+			print_r($data);
 			update_record($this->name, $data);
 			return (false);
 		}
@@ -111,7 +112,7 @@
 				return ('ERROR: Invalid action');
 			$this->action = $action;
 			foreach ($this->fields as $field) {
-				if ($field->name != 'author_id') {
+				if ($field->name != 'author_id' && $field->name != 'username') {
 					if (!isset($post[$field->name]))
 						return ('ERROR: Fill in all neccesary fields. REQUIRED: '.$field->name);
 					if ($field->name == 'age' || $field->name == 'year') {
@@ -128,7 +129,10 @@
 						$regex = $RGX_PATTERNS['genres'];
 						$response = 'Input must contain only alpabetical characters as well as comma and space';
 					}
-					if (!preg_match('/'.$regex.'/', $post[$field->name], $matches)) {
+					if ($field->name == 'role') {
+						if ($post[$field->name] != '0' && $post[$field->name] != '1')
+							return ('ERROR: User role invalid');
+					} else if (!preg_match('/'.$regex.'/', $post[$field->name], $matches)) {
 						return ('ERROR: '.$response);
 					}
 					$this->fields[$field->name]->value = $post[$field->name];
@@ -144,6 +148,8 @@
 				}
 				else
 					return ('ERROR: Author not found. Make sure that the author is already in the authors table');
+			} else if ($get['table'] == 'users') {
+				$this->fields['username']->value = $post['username'];
 			}
 			return (false);
 		}

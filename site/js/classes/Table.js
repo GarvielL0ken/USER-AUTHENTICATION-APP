@@ -1,10 +1,12 @@
 import { Author } from './Author.js';
 import { AuthorControls } from './AuthorControls.js';
+import { Book } from './Books.js';
 import { BooksControls } from './BooksControls.js';
-import { RequestHandler } from './RequestHandler.js'
+import { RequestHandler } from './RequestHandler.js';
+import { User } from './User.js';
 
 import { getURLParameter } from '../lib.js';
-import { Book } from './Books.js';
+
 
 export class Table {
 	constructor(name, fields, displayMode='view') {
@@ -67,6 +69,8 @@ export class Table {
 					this.records_.push(new Author(this, response[index]));
 				if (this.name_ === 'books')
 					this.records_.push(new Book(this, response[index]));
+				if (this.name_ === 'users')
+					this.records_.push(new User(this, response[index]));
 				index++;
 			}
 		}
@@ -111,12 +115,12 @@ export class Table {
 
 	updateTable(record) {
 		this.updatedRecord = record;
-		console.log(record);
 		this.RequestHandler.fetchN("UPDATE_RECORD", record.stringify())
 			.then((response) => this.updateTableCallback(response));
 	}
 
 	updateTableCallback(response) {
+		console.log(response);
 		if (getURLParameter(response, 'response') != 'SUCCESS') {
 			this.updatedRecord.revertChanges();
 		}

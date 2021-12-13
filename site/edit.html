@@ -120,6 +120,32 @@
 			<!--Users	-->
 			<div v-if="table === 'users'">
 				<div v-html="tables.users.printHeader()"></div>
+				<div class="row-container" v-for="user in tables.users.getRecords()">
+					<!--Username -->
+					<div class="record box">{{user.username}}</div>
+					<!-- Role -->
+					<div v-if="user.state==='view' || user.state==='delete'" class="record box">{{user.role}}</div>
+					<div v-if="user.state==='edit'" class="record box">
+						<select name="role" v-model='user.intRole'>
+							<option value="0">Member</option>
+							<option value="1">Librarian</option>
+						</select>
+					</div>
+					
+					<!-- BOOK EDIT CONTROLS -->
+					<div class="record box">
+						<button @click="user.changeState('edit')" v-if="user.state==='view' || user.state==='delete'">Edit</button>
+						<button @click="user.changeState('confirmEdit')" v-if="user.state==='edit'">Commit</button>
+						<button @click="user.changeState('cancelEdit')" v-if="user.state==='edit'">Cancel</button>
+					</div>
+					
+					<!-- BOOK DELETE CONTROLS -->
+					<div class="record box">
+						<button @click="user.changeState('delete')" v-if="user.state==='view' || user.state==='edit'">Delete</button>
+						<button @click="user.changeState('confirmDelete')" v-if="user.state==='delete'">Confirm</button>
+						<button @click="user.changeState('cancelDelete')" v-if="user.state==='delete'">Cancel</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script src="https://unpkg.com/vue"></script>

@@ -28,9 +28,9 @@ var vueModel = new Vue({
 	mounted() {
 		var	result;
 		
-		this.tables.authors.getTableFromDatabase();
-		this.tables.books.getTableFromDatabase();
-		//this.tables.users.getTableFromDatabase();
+		//this.tables.authors.getTableFromDatabase();
+		//this.tables.books.getTableFromDatabase();
+		this.tables.users.getTableFromDatabase();
 		
 		result = getURLParameter(window.location.href, "page");
 		this.table = result ? result : "authors";
