@@ -1,9 +1,8 @@
 import { Author } from './Author.js';
-import { RequestData } from './RequestData.js';
+import { AuthorControls } from './AuthorControls.js';
 import { RequestHandler } from './RequestHandler.js'
 
 import { getURLParameter } from '../lib.js';
-
 export class Table {
 	constructor(name, fields, displayMode='view') {
 		/** @private {!name}*/
@@ -19,12 +18,22 @@ export class Table {
 		this.records_ = [];
 		this.RequestHandler = new RequestHandler();
 		this.RequestHandler.addNewRequestData("getTable", "get_table.php?table="+name, "GET");
-		this.RequestHandler.addNewRequestData("CREATE_RECORD", "create_record.php?table="+name);
+		this.RequestHandler.addNewRequestData("CREATE_RECORD", "edit.php?table="+name+"&action=CREATE", "POST", "text");
+		//this.RequestHandler.addNewRequestData("READ_RECORD", "edit.php?table="+name+"&action=READ", "POST", "text");
 		this.RequestHandler.addNewRequestData("UPDATE_RECORD", "edit.php?table="+name+"&action=UPDATE", "POST", "text");
-		this.RequestHandler.addNewRequestData("DELETE_RECORD", "delete_record.php?table="+name);
+		this.RequestHandler.addNewRequestData("DELETE_RECORD", "edit.php?table="+name+"&action=DELETE", "POST", "text");
+
+		/** @private {!createdRecord} */
+		this.createdRecord = '';
 
 		/** @private {!updatedRecord} */
 		this.updatedRecord = '';
+
+		/** @private {!deltedRecord} */
+		this.deletedRecord = '';
+
+		/** @public */
+		this.controls = new AuthorControls(this);
 	}
 
 	//=========================================================================
@@ -43,6 +52,7 @@ export class Table {
 		/*int*/		var	index;
 	
 		index = 0;
+		console.log(response);
 		if (response) {
 			while (response[index]) {
 				if (this.name_ === 'authors')
@@ -75,6 +85,18 @@ export class Table {
 	//=========================================================================
 	//CRUD METHODS
 	//=========================================================================
+	createNewRecord(record) {
+		console.log("TABLE: CREATE NEW RECORD");
+		this.createdRecord = record;
+		this.RequestHandler.fetchN("CREATE_RECORD", record.stringify())
+			.then((response) => this.createNewRecordCallback(response))
+	}
+
+	createNewRecordCallback(response) {
+		if (getURLParameter(response, 'response') != 'SUCCESS') {
+			this.records_.push(this.createdRecord);
+		}
+	}
 
 	updateTable(record) {
 		this.updatedRecord = record;
@@ -83,9 +105,25 @@ export class Table {
 	}
 
 	updateTableCallback(response) {
-		if (getURLParameter(response, 'response') != 'SUCCESS')
+		if (getURLParameter(response, 'response') != 'SUCCESS') {
 			this.updatedRecord.revertChanges();
+		}
+	}
 
+	deleteRecordFromTable(record) {
+		this.deletedRecord = record;
+		this.RequestHandler.fetchN("DELETE_RECORD", record.stringify())
+			.then((response) => this.deleteRecordFromTableCallback(response));
+	}
+	
+	deleteRecordFromTableCallback(response) {
+		/*int*/	var	index;
+
+		if (getURLParameter(response, 'response') == 'SUCCESS') {
+			index = this.records_.indexOf(this.deletedRecord);
+			if (index != -1)
+				this.records_.splice(index, 1);
+		}
 	}
 
 	//=========================================================================

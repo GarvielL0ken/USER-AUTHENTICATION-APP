@@ -12,6 +12,10 @@ export class Record {
 		this.state = newState;
 	}
 
+	deleteRecord() {
+		this.table_.deleteRecordFromTable(this);
+	}
+
 	updateRecord() {
 		this.table_.updateTable(this);
 	}

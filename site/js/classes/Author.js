@@ -16,11 +16,13 @@ export class Author extends Record {
 		this.previousState_ = this.state;
 		this.state = newState;
 
-		super.changeState(newState);
+		//super.changeState(newState);
+		console.log(newState);
 		if (this.state ==='edit') {
 			this.saveState();
 		} else if (this.state === 'confirmEdit') {
 			super.updateRecord();
+			this.state = 'view';
 		} else if (this.state === 'cancelEdit') {
 			this.revertChanges();
 		} else if (this.state === 'confirmDelete') {
@@ -48,9 +50,11 @@ export class Author extends Record {
 		/*object*/	var	data;
 
 		data = {
-			name:	this.name,
-			age:	this.age,
-			genres:	this.genres
+			name:				this.name,
+			age:				this.age,
+			genres:				this.genres,
+			primaryKey:			'name',
+			primaryKeyValue:	this.previousName_
 		};
 
 		return (data);

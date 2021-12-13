@@ -33,6 +33,15 @@
 			}
 		}
 
+		private function generateNonDuplicatableFields(array $data) {
+			/*array*/	$field_value_pairs;
+			if ($this->name == 'authors') {
+				$field_value_pairs['name'] = $data['name'];
+			}
+			print_r($field_value_pairs);
+			return ($field_value_pairs);
+		}
+
 		private function prepare_data(bool $set_primary_key=FALSE, bool $set_primary_key_only=FALSE) {
 			/*array*/	$data;
 
@@ -63,8 +72,10 @@
 			/*array*/	$data;
 
 			$data = $this->prepare_data();
-			insert_new_record($this->name, $data, TRUE);
-			return (false);
+			if (is_in_database_mult($this->name, $this->generateNonDuplicatableFields($data)))
+				return (TRUE);
+			insert_new_record($this->name, $data);
+			return (FALSE);
 		}
 
 		public function execute_action_update() {
@@ -79,7 +90,6 @@
 			/*array*/	$data;
 
 			$data = $this->prepare_data(TRUE, TRUE);
-			print_r($data);
 			delete_record($this->name, $data);
 		}
 

@@ -106,6 +106,8 @@
 			$ignore = '';
 
 		$sql = 'INSERT '. $ignore . ' INTO '. $table . ' (' . $fields . ') VALUES (' . $values . ')';
+		print($sql);
+		print_r($data);
 		execute_sql($sql, $data, FALSE);
 	}
 
@@ -119,7 +121,7 @@
 		is equavalent to:
 			"SELECT FROM users WHERE username = 'John Doe' OR email = 'john@doe.com'"
 	*/
-	function is_in_database_mult(string $table, string ...$data) {
+	function is_in_database_mult(string $table, array $data) {
 		/*array*/	$results	=null;
 
 		$results = select_where_mult($table, '*', $data);
@@ -189,6 +191,7 @@
 				$index++;
 			}
 		}
+		
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
 		$statement->execute($data);
