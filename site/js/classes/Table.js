@@ -1,8 +1,11 @@
 import { Author } from './Author.js';
 import { AuthorControls } from './AuthorControls.js';
+import { BooksControls } from './BooksControls.js';
 import { RequestHandler } from './RequestHandler.js'
 
 import { getURLParameter } from '../lib.js';
+import { Book } from './Books.js';
+
 export class Table {
 	constructor(name, fields, displayMode='view') {
 		/** @private {!name}*/
@@ -33,7 +36,12 @@ export class Table {
 		this.deletedRecord = '';
 
 		/** @public */
-		this.controls = new AuthorControls(this);
+		switch(name) {
+			case 'authors':
+				this.controls = new AuthorControls(this);
+			case 'books':
+				this.controls = new BooksControls(this);
+		}
 	}
 
 	//=========================================================================
@@ -57,6 +65,8 @@ export class Table {
 			while (response[index]) {
 				if (this.name_ === 'authors')
 					this.records_.push(new Author(this, response[index]));
+				if (this.name_ === 'books')
+					this.records_.push(new Book(this, response[index]));
 				index++;
 			}
 		}
@@ -86,13 +96,14 @@ export class Table {
 	//CRUD METHODS
 	//=========================================================================
 	createNewRecord(record) {
-		console.log("TABLE: CREATE NEW RECORD");
 		this.createdRecord = record;
+		console.log(record);
 		this.RequestHandler.fetchN("CREATE_RECORD", record.stringify())
 			.then((response) => this.createNewRecordCallback(response))
 	}
 
 	createNewRecordCallback(response) {
+		console.log(response);
 		if (getURLParameter(response, 'response') != 'SUCCESS') {
 			this.records_.push(this.createdRecord);
 		}
@@ -100,6 +111,7 @@ export class Table {
 
 	updateTable(record) {
 		this.updatedRecord = record;
+		console.log(record);
 		this.RequestHandler.fetchN("UPDATE_RECORD", record.stringify())
 			.then((response) => this.updateTableCallback(response));
 	}
@@ -112,6 +124,7 @@ export class Table {
 
 	deleteRecordFromTable(record) {
 		this.deletedRecord = record;
+		console.log(record);
 		this.RequestHandler.fetchN("DELETE_RECORD", record.stringify())
 			.then((response) => this.deleteRecordFromTableCallback(response));
 	}

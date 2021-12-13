@@ -35,10 +35,13 @@
 
 		private function generateNonDuplicatableFields(array $data) {
 			/*array*/	$field_value_pairs;
-			if ($this->name == 'authors') {
-				$field_value_pairs['name'] = $data['name'];
+
+			switch ($this->name) {
+				case 'authors':
+					$field_value_pairs['name'] = $data['name'];
+				case 'books':
+					$field_value_pairs['title'] = $data['title'];
 			}
-			print_r($field_value_pairs);
 			return ($field_value_pairs);
 		}
 
@@ -101,31 +104,47 @@
 			/*string*/	$regex;
 
 			/*array*/	$data_types;
+			/*array*/	$results;
 
 			$action = $get['action'];
 			if ($action != 'CREATE' && $action != 'READ' && $action != 'UPDATE' && $action != 'DELETE')
 				return ('ERROR: Invalid action');
 			$this->action = $action;
 			foreach ($this->fields as $field) {
-				if (!isset($post[$field->name]))
-					return ('ERROR: Fill in all neccesary fields. REQUIRED: '.$field->name);
-				if ($field->name == 'age' || $field->name == 'year') {
-					$regex = $RGX_PATTERNS['numeric'];
-					$response = 'Input must contain only numeric characters';
-				} else {
-					$regex = $RGX_PATTERNS['alpha'];
-					$response = 'Input must contain only alpabetical characters and spaces';
+				if ($field->name != 'author_id') {
+					if (!isset($post[$field->name]))
+						return ('ERROR: Fill in all neccesary fields. REQUIRED: '.$field->name);
+					if ($field->name == 'age' || $field->name == 'year') {
+						$regex = $RGX_PATTERNS['numeric'];
+						$response = 'Input must contain only numeric characters';
+					} else if ($field->name == 'age_group') {
+						$regex = $RGX_PATTERNS['alphanumeric'];
+						$response = 'Input must contain only alphanumeric character as well as space';
+					} else {
+						$regex = $RGX_PATTERNS['alpha'];
+						$response = 'Input must contain only alpabetical characters and spaces';
+					}
+					if ($field->name == 'genres') {
+						$regex = $RGX_PATTERNS['genres'];
+						$response = 'Input must contain only alpabetical characters as well as comma and space';
+					}
+					if (!preg_match('/'.$regex.'/', $post[$field->name], $matches)) {
+						return ('ERROR: '.$response);
+					}
+					$this->fields[$field->name]->value = $post[$field->name];
 				}
-				if ($field->name == 'genres') {
-					$regex = $RGX_PATTERNS['genres'];
-					$response = 'Input must contain only alpabetical characters as well as comma and space';
-				}
-				if (!preg_match('/'.$regex.'/', $post[$field->name], $matches)) {
-					return ('ERROR: '.$response);
-				}
-				$this->fields[$field->name]->value = $post[$field->name];
 			}
 			$this->primary_key_value = $post['primaryKeyValue'];
+			if ($get['table'] == 'books') {
+				$results = select_where_mult('authors', 'author_id', ['name' => $post['author']]);
+				if ($results) {
+					$this->fields['author_id'] = new Field('author_id');
+					$this->fields['author_id']->value = $results[0]['author_id'];
+					unset($this->fields['author']);
+				}
+				else
+					return ('ERROR: Author not found. Make sure that the author is already in the authors table');
+			}
 			return (false);
 		}
 	}

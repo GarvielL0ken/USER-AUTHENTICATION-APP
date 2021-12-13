@@ -10,6 +10,21 @@ export class Record {
 	changeState(newState) {
 		this.previousState_ = this.state;
 		this.state = newState;
+
+		console.log(newState);
+		if (this.state ==='edit') {
+			this.saveState();
+		} else if (this.state === 'confirmEdit') {
+			this.updateRecord();
+			this.state = 'view';
+		} else if (this.state === 'cancelEdit') {
+			this.revertChanges();
+		} else if (this.state === 'confirmDelete') {
+			this.deleteRecord();
+			this.state = 'view';
+		} else if (this.state === 'cancelDelete') {
+			this.state = 'view';
+		}
 	}
 
 	deleteRecord() {

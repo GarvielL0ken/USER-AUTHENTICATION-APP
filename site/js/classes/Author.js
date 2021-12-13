@@ -9,33 +9,12 @@ export class Author extends Record {
 
 		this.previousName_ = this.name;
 		this.previousAge_ = this.age;
-		this.previousGenres_ = this.previousGenres_;
-	}
-
-	changeState(newState) {
-		this.previousState_ = this.state;
-		this.state = newState;
-
-		//super.changeState(newState);
-		console.log(newState);
-		if (this.state ==='edit') {
-			this.saveState();
-		} else if (this.state === 'confirmEdit') {
-			super.updateRecord();
-			this.state = 'view';
-		} else if (this.state === 'cancelEdit') {
-			this.revertChanges();
-		} else if (this.state === 'confirmDelete') {
-			super.deleteRecord();
-			this.state = 'view';
-		} else if (this.state === 'cancelDelete') {
-			this.state = 'view';
-		}
+		this.previousGenres_ = this.genres;
 	}
 
 	saveState() {
 		this.previousName_ = this.name;
-		this.previousAge_ = this.previousAge_;
+		this.previousAge_ = this.age_;
 		this.previousGenres_ = this.genres;
 	}
 

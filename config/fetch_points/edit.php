@@ -31,7 +31,6 @@
 	$page = $_GET['table'];
 	$path .= '?page='.$page;
 
-	
 	$table = new Table($page);
 	$response = $table->validate_user_input($post, $_GET);
 	if ($response)	
@@ -39,5 +38,5 @@
 	$response = $table->execute_action();
 	if ($response)
 		redirect($path.'&response='.$response, TRUE, TRUE);
-	redirect($path.'$response=SUCESS', TRUE, TRUE);
+	redirect($path.'$response=SUCCESS', TRUE, TRUE);
 ?>

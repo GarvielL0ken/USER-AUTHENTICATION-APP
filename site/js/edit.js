@@ -8,7 +8,7 @@ var vueModel = new Vue({
 		table : "",
 		tables : {
 			authors : new Table('authors', ['name', 'age', 'genres']),
-			books : new Table('books', ['title', 'genre', 'year', 'age_group']),
+			books : new Table('books', ['title', 'author', 'genre', 'year', 'age_group']),
 			genres : new Table('genres', ['name']),
 			users : new Table('users', ['username', 'role'])
 		},
@@ -29,7 +29,8 @@ var vueModel = new Vue({
 		var	result;
 		
 		this.tables.authors.getTableFromDatabase();
-		this.tables.users.getTableFromDatabase();
+		this.tables.books.getTableFromDatabase();
+		//this.tables.users.getTableFromDatabase();
 		
 		result = getURLParameter(window.location.href, "page");
 		this.table = result ? result : "authors";

@@ -106,8 +106,6 @@
 			$ignore = '';
 
 		$sql = 'INSERT '. $ignore . ' INTO '. $table . ' (' . $fields . ') VALUES (' . $values . ')';
-		print($sql);
-		print_r($data);
 		execute_sql($sql, $data, FALSE);
 	}
 
@@ -206,6 +204,7 @@
 		$sql .= ' SET'. data_to_sql($data, 'UPDATE');
 		$sql .= ' WHERE'. data_to_sql($data, 'PRIMARY_KEY');
 		
+		unset($data['primary_key']);
 		return (execute_sql($sql, $data, FALSE));
 	}
 
