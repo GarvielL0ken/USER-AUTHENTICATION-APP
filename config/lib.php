@@ -10,17 +10,21 @@
 	require_once(__ROOT__.'./globals.php');
 	require_once(__ROOT__.'./setup.php');
 	/*CONTENTS*/
-	//bool	is_in_database_mult(string $table, string ...$data);
+	//string	data_to_sql(array $data, string $modifier=null);
+	//void		delete_record(string $table, array $data);
+	//array		execute_sql(string $sql, array $data, bool $return_results=TRUE);
+	//void		insert_new_record($table, $data, $ignore=FALSE);
+	//bool		is_in_database_mult(string $table, string ...$data);
+	//bool		is_set_array(array $array, string ...$keys);
+	//void		redirect(string $path, bool $exit=false);
+	//array		select_all(string $table, string $fields)
+	//array		select_where_mult(string $table, string $fields, array $data=null, array $conditions=null);
+	//void		update_record(string $table, array $data);
+	//bool		valid_email(string $email);
+	//bool		invalid_passwd(string $passwd, string $confirm_passwd);
+	//bool		valid_username(string $username);
+	//bool		verify_user_credentials(string $username, string $passwd);
 
-	//bool	is_set_array(array $array, string ...$keys);
-	
-	//void	redirect(string $path, bool $exit=false);
-	
-	//bool	valid_email(string $email);
-
-	//bool	valid_passwd(string $passwd, string $confirm_passwd);
-	
-	//bool	valid_username(string $username);
 
 	function data_to_sql(array $data, string $modifier=null) {
 		/*array*/	$keys;
@@ -35,7 +39,7 @@
 		$keys = array_keys($data);
 		if ($modifier != 'PRIMARY_KEY') {
 			foreach ($keys as $key) {
-				if ($key != 'primary_key') {
+				if ($key != 'primary_key' && $key != 'primary_key_value') {
 					$key_string = $key.' = :'.$key;
 					if (!$modifier)
 						$key_string = '('.$key_string.')';
@@ -47,18 +51,31 @@
 				$index++;
 			}
 		} else {
-			$sql = '('.$data['primary_key'] .'= :'.$data['primary_key'].')';
+			$sql = '('.$data['primary_key'] .'= :primary_key_value)';
 		}
 		return ($sql);
 	}
+
+	function delete_record(string $table, array $data) {
+		/*string*/	$sql;
+
+		$sql = 'DELETE FROM '.$table;
+		$sql .= ' WHERE'. data_to_sql($data, 'PRIMARY_KEY');
+		unset($data['primary_key']);
+		
+		execute_sql($sql, $data, FALSE);
+	}
 	
 	function execute_sql(string $sql, array $data, bool $return_results=TRUE) {
+		/*array*/			$results;
+		
 		/*PDO Connection*/	$connection;
 		/*PDO Statement*/	$statement;
 
 		$connection = connect_to_database();
 		$statement = $connection->prepare($sql);
 		$statement->execute($data);
+		$results = '';
 		if ($return_results)
 			$results = $statement->fetchAll();
 		return ($results);
@@ -89,9 +106,7 @@
 			$ignore = '';
 
 		$sql = 'INSERT '. $ignore . ' INTO '. $table . ' (' . $fields . ') VALUES (' . $values . ')';
-		$connection = connect_to_database();
-		$statement = $connection->prepare($sql);
-		$statement->execute($data);
+		execute_sql($sql, $data, FALSE);
 	}
 
 	/*Used to check if there are any values mathcing those passed via ...$data
@@ -180,6 +195,16 @@
 		$results = $statement->fetchAll();
 		return ($results);
 	}
+	
+	function update_record(string $table, array $data) {
+		/*string*/	$sql;
+		
+		$sql = 'UPDATE '.$table;
+		$sql .= ' SET'. data_to_sql($data, 'UPDATE');
+		$sql .= ' WHERE'. data_to_sql($data, 'PRIMARY_KEY');
+		
+		return (execute_sql($sql, $data, FALSE));
+	}
 
 	/*Tests the validity of the passed email address against a REGEX*/
 	function valid_email(string $email) {
@@ -200,16 +225,6 @@
 			return ('Invalid password: Password must be between 8 and 32 characters long: ' .
 				'Must contain at least one: lowercase, uppercase, numeric and special charater');
 		return (false);
-	}
-
-	function update_record(string $table, array $data) {
-		/*string*/	$sql;
-		
-		$sql = 'UPDATE '.$table;
-		$sql .= ' SET'. data_to_sql($data, 'UPDATE');
-		$sql .= ' WHERE'. data_to_sql($data, 'PRIMARY_KEY');
-		
-		return (execute_sql($sql, $data, FALSE));
 	}
 
 	/*Tests the validity of the passed username against a REGEX*/

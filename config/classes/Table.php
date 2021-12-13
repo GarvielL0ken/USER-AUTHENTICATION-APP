@@ -33,14 +33,18 @@
 			}
 		}
 
-		private function prepare_data(bool $set_primary_key=false) {
+		private function prepare_data(bool $set_primary_key=FALSE, bool $set_primary_key_only=FALSE) {
 			/*array*/	$data;
 
 			$data = array();
-			foreach ($this->fields as $field) 
-				$data[$field->name] = $field->value;
-			if ($set_primary_key)
+			if (!$set_primary_key_only) {
+				foreach ($this->fields as $field) 
+					$data[$field->name] = $field->value;
+			}
+			if ($set_primary_key) {
 				$data['primary_key'] = $this->primary_key;
+				$data['primary_key_value'] = $this->primary_key_value;
+			}
 			return ($data);
 		}
 
@@ -49,6 +53,8 @@
 				$response = $this->execute_action_create();
 			if ($this->action == 'UPDATE')
 				$response = $this->execute_action_update();
+			if ($this->action == 'DELETE')
+				$response = $this->execute_action_delete();
 
 			return ($response);
 		}
@@ -67,6 +73,14 @@
 			$data = $this->prepare_data(TRUE);
 			update_record($this->name, $data);
 			return (false);
+		}
+
+		public function execute_action_delete() {
+			/*array*/	$data;
+
+			$data = $this->prepare_data(TRUE, TRUE);
+			print_r($data);
+			delete_record($this->name, $data);
 		}
 
 		/*Returns false if user input is valid, otherwise returns an error message*/
@@ -101,6 +115,7 @@
 				}
 				$this->fields[$field->name]->value = $post[$field->name];
 			}
+			$this->primary_key_value = $post['primaryKeyValue'];
 			return (false);
 		}
 	}
